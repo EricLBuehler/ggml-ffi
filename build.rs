@@ -1,4 +1,5 @@
 use std::{env, path::PathBuf};
+use std::process::Command;
 
 fn main() {
     // Where the ggml sources live relative to this crate
@@ -134,6 +135,32 @@ fn main() {
         ggml_src.join("include").display()
     );
     println!("cargo:rerun-if-changed=wrapper.h");
+
+    // Expose git/ build metadata to Rust code and docs
+    let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+    let ggml_dir = manifest_dir.join("ggml");
+    let git_out = |dir: &PathBuf, args: &[&str]| -> Option<String> {
+        let out = Command::new("git")
+            .args(args)
+            .current_dir(dir)
+            .output()
+            .ok()?;
+        if out.status.success() {
+            Some(String::from_utf8_lossy(&out.stdout).trim().to_string())
+        } else {
+            None
+        }
+    };
+    // ggml submodule commit hash and commit time
+    let ggml_commit = git_out(&ggml_dir, &["rev-parse", "--short", "HEAD"]).unwrap_or_else(|| "unknown".into());
+    let ggml_time = git_out(&ggml_dir, &["show", "-s", "--format=%cI", "HEAD"]).unwrap_or_else(|| {
+        match std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
+            Ok(d) => format!("{}", d.as_secs()),
+            Err(_) => "unknown".into(),
+        }
+    });
+    println!("cargo:rustc-env=GGML_FFI_GGML_COMMIT={}", ggml_commit);
+    println!("cargo:rustc-env=GGML_FFI_GGML_COMMIT_TIME={}", ggml_time);
 
     // Generate bindings
     let bindings = bindgen::Builder::default()
