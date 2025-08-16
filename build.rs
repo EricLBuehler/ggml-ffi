@@ -83,17 +83,29 @@ fn main() {
     }
     if feat_cuda {
         println!("cargo:rustc-link-lib=static=ggml-cuda");
-        // Common CUDA runtime / BLAS deps; names may vary by platform
-        // Prefer generic names to let the system resolver find them
-        println!("cargo:rustc-link-lib=cudart");
-        println!("cargo:rustc-link-lib=cublas");
-        // Link CUDA driver unless disabled by ggml config
-        println!("cargo:rustc-link-lib=cuda");
+        // CUDA runtime and BLAS; names vary per platform
+        match target_os.as_str() {
+            "windows" => {
+                println!("cargo:rustc-link-lib=cudart");
+                println!("cargo:rustc-link-lib=cublas");
+                // CUDA driver on Windows is nvcuda
+                println!("cargo:rustc-link-lib=nvcuda");
+            }
+            _ => {
+                println!("cargo:rustc-link-lib=cudart");
+                println!("cargo:rustc-link-lib=cublas");
+                // CUDA driver on Unix-like systems
+                println!("cargo:rustc-link-lib=cuda");
+            }
+        }
     }
     if feat_vulkan {
         println!("cargo:rustc-link-lib=static=ggml-vulkan");
-        // System Vulkan loader (typically libvulkan)
-        println!("cargo:rustc-link-lib=vulkan");
+        // System Vulkan loader
+        match target_os.as_str() {
+            "windows" => println!("cargo:rustc-link-lib=vulkan-1"),
+            _ => println!("cargo:rustc-link-lib=vulkan"),
+        }
     }
     if feat_opencl {
         println!("cargo:rustc-link-lib=static=ggml-opencl");
@@ -136,7 +148,10 @@ fn main() {
         .allowlist_var("GGML_.*")
         .allowlist_var("GGUF_.*")
         // Make C enums into proper Rust enums where safe
-        .default_enum_style(bindgen::EnumVariation::Rust { non_exhaustive: false })
+        .default_enum_style(bindgen::EnumVariation::Rust { non_exhaustive: true })
+        .derive_eq(true)
+        .derive_partialeq(true)
+        .derive_hash(true)
         // Derives to make the bindings ergonomic
         .derive_default(true)
         .derive_debug(true)
