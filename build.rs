@@ -176,9 +176,6 @@ fn main() {
         .allowlist_var("GGUF_.*")
         // Make C enums into proper Rust enums where safe
         .default_enum_style(bindgen::EnumVariation::Rust { non_exhaustive: true })
-        .derive_eq(true)
-        .derive_partialeq(true)
-        .derive_hash(true)
         // Derives to make the bindings ergonomic
         .derive_default(true)
         .derive_debug(true)
