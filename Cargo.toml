@@ -4,6 +4,19 @@ version = "0.1.0"
 edition = "2021"
 links = "ggml"
 
+[features]
+# Enable GPU backends via features; default is CPU-only
+default = []
+# GPU backends
+metal = []
+cuda = []
+vulkan = []
+opencl = []
+hip = []
+musa = []
+sycl = []
+webgpu = []
+
 [build-dependencies]
 bindgen = "0.72"
 cmake = "0.1.54"
