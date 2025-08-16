@@ -1,0 +1,12 @@
+[package]
+name = "ggml-ffi"
+version = "0.1.0"
+edition = "2021"
+links = "ggml"
+
+[build-dependencies]
+bindgen = "0.72"
+cmake = "0.1.54"
+
+[dependencies]
+libc = "0.2"
