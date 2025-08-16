@@ -135,6 +135,8 @@ fn main() {
         .allowlist_type("gguf_.*")
         .allowlist_var("GGML_.*")
         .allowlist_var("GGUF_.*")
+        // Make C enums into proper Rust enums where safe
+        .default_enum_style(bindgen::EnumVariation::Rust { non_exhaustive: false })
         // Derives to make the bindings ergonomic
         .derive_default(true)
         .derive_debug(true)
