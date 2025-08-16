@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "enabledManagers": ["git-submodules"],
+  "labels": ["deps", "submodules"],
+  "timezone": "UTC",
+  "rebaseWhen": "behind-base-branch",
+  "packageRules": [
+    {
+      "matchManagers": ["git-submodules"],
+      "groupName": "git submodules",
+      "automerge": false,
+      "postUpgradeTasks": {
+        "commands": [
+          "bash scripts/bump_patch_version.sh"
+        ],
+        "fileFilters": [
+          "Cargo.toml"
+        ]
+      }
+    }
+  ]
+}

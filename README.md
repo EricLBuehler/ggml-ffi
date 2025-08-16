@@ -3,6 +3,8 @@ ggml-ffi
 
 Low-level Rust FFI bindings to the GGML C API shipped in this repository under `ggml/`.
 
+There are no semantic versioning guarantees. Each version of this crate is tied to a specific GGML commit. This crate's version should only be used to pin GGML revisions.
+
 Features
 --------
 
