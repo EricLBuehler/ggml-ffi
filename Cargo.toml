@@ -2,7 +2,11 @@
 name = "ggml-ffi"
 version = "0.0.1"
 edition = "2021"
-links = "ggml"
+description = "Up-to-date Rust FFI bindings to GGML."
+repository = "https://github.com/EricLBuehler/ggml-ffi"
+keywords = ["machine-learning", "ggml"]
+categories = ["science"]
+license = "MIT"
 
 [features]
 # Enable GPU backends via features; default is CPU-only
